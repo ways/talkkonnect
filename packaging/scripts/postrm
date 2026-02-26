@@ -1,0 +1,21 @@
+#!/bin/sh
+set -e
+
+if [ "$1" = "purge" ]; then
+    # Remove config directory (but not if the admin has custom files — dpkg
+    # marks conffiles for removal separately, so only our created dir remains).
+    rm -rf /etc/talkkonnect
+    rm -rf /var/lib/talkkonnect
+
+    # Remove the system user and its primary group.
+    if id -u talkkonnect > /dev/null 2>&1; then
+        deluser --quiet --system talkkonnect || true
+    fi
+    if getent group talkkonnect > /dev/null 2>&1; then
+        delgroup --quiet --system talkkonnect || true
+    fi
+fi
+
+if command -v systemctl > /dev/null 2>&1; then
+    systemctl daemon-reload || true
+fi

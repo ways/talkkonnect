@@ -1,0 +1,33 @@
+[Unit]
+Description=talkkonnect Mumble PTT Client
+Documentation=https://www.talkkonnect.com
+After=network-online.target sound.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=talkkonnect
+Group=talkkonnect
+
+ExecStart=/usr/bin/talkkonnect -config /etc/talkkonnect/talkkonnect.xml
+
+Restart=on-failure
+RestartSec=5s
+
+# Send stdout/stderr to the journal (view with: journalctl -u talkkonnect -f)
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=talkkonnect
+
+# Give the process access to audio and hardware peripherals via supplementary groups.
+# gpio/i2c/spi may not exist on non-RPi systems; that is harmless.
+SupplementaryGroups=audio video dialout plugdev input gpio i2c spi
+
+# Hardening: restrict unnecessary privileges while keeping hardware access
+NoNewPrivileges=yes
+ProtectSystem=strict
+ReadWritePaths=/var/lib/talkkonnect /etc/talkkonnect /tmp
+PrivateTmp=yes
+
+[Install]
+WantedBy=multi-user.target

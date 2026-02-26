@@ -1,0 +1,67 @@
+name: Build Debian package
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  build-deb:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write   # needed to create the release and upload assets
+
+    strategy:
+      matrix:
+        include:
+          - platform: linux/arm64
+            deb_arch: arm64
+          - platform: linux/arm/v7
+            deb_arch: armhf
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # ARM emulation on the x86 GitHub runner
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+        with:
+          platforms: arm64,arm
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      # Build only the Go compiler stage (no runtime image needed for packaging)
+      - name: Build binary for ${{ matrix.deb_arch }}
+        run: |
+          mkdir -p dist
+          docker buildx build \
+            --platform ${{ matrix.platform }} \
+            --target builder \
+            --load \
+            -t talkkonnect-builder:${{ matrix.deb_arch }} \
+            .
+          cid=$(docker create --platform ${{ matrix.platform }} talkkonnect-builder:${{ matrix.deb_arch }})
+          docker cp "$cid":/talkkonnect dist/talkkonnect
+          docker rm "$cid"
+
+      - name: Install nfpm
+        run: |
+          curl -fsSL \
+            "https://github.com/goreleaser/nfpm/releases/download/v2.39.0/nfpm_2.39.0_Linux_x86_64.tar.gz" \
+            | tar -xz -C /usr/local/bin nfpm
+
+      - name: Build .deb for ${{ matrix.deb_arch }}
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}" ARCH="${{ matrix.deb_arch }}" \
+            nfpm package \
+              --config packaging/nfpm.yaml \
+              --packager deb \
+              --target dist/
+
+      # Create/update the GitHub Release and attach the .deb
+      - name: Upload .deb to release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/*.deb

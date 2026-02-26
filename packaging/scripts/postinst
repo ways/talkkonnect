@@ -1,0 +1,52 @@
+#!/bin/sh
+set -e
+
+# Create hardware-access groups if they do not exist (RPi OS creates them
+# automatically, but other Debian-based systems may not).
+for grp in gpio i2c spi; do
+    if ! getent group "$grp" > /dev/null 2>&1; then
+        addgroup --system "$grp"
+    fi
+done
+
+# Create the talkkonnect system user (no login shell, no home directory).
+if ! id -u talkkonnect > /dev/null 2>&1; then
+    adduser --system --group \
+            --no-create-home \
+            --shell /usr/sbin/nologin \
+            --gecos "talkkonnect PTT service" \
+            talkkonnect
+fi
+
+# Add talkkonnect to the groups it needs for hardware and audio access.
+for grp in audio video dialout plugdev input gpio i2c spi; do
+    if getent group "$grp" > /dev/null 2>&1; then
+        usermod -aG "$grp" talkkonnect
+    fi
+done
+
+# Ensure the config directory exists and is readable by the service user.
+install -d -o root -g talkkonnect -m 750 /etc/talkkonnect
+
+# If no config file exists yet, put the example in place so the service
+# can at least start (the admin still needs to edit it).
+if [ ! -f /etc/talkkonnect/talkkonnect.xml ]; then
+    install -o root -g talkkonnect -m 640 \
+        /etc/talkkonnect/talkkonnect.xml.example \
+        /etc/talkkonnect/talkkonnect.xml
+    echo "talkkonnect: installed default config to /etc/talkkonnect/talkkonnect.xml"
+    echo "             Please edit it before starting the service."
+fi
+
+# Reload udev so the new rules take effect immediately.
+if command -v udevadm > /dev/null 2>&1; then
+    udevadm control --reload-rules || true
+    udevadm trigger            || true
+fi
+
+# Register and optionally start the systemd service.
+if command -v systemctl > /dev/null 2>&1 && systemctl is-system-running --quiet 2>/dev/null; then
+    systemctl daemon-reload
+    systemctl enable talkkonnect.service
+    echo "talkkonnect: service enabled. Start with: sudo systemctl start talkkonnect"
+fi

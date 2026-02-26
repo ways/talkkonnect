@@ -1,0 +1,66 @@
+# nfpm package configuration for talkkonnect
+# https://nfpm.goreleaser.com/configuration/
+#
+# Build with:
+#   cp dist/talkkonnect-arm64 dist/talkkonnect
+#   VERSION=2.44.01 ARCH=arm64 nfpm package --config packaging/nfpm.yaml --packager deb
+#   cp dist/talkkonnect-armhf dist/talkkonnect
+#   VERSION=2.44.01 ARCH=armhf nfpm package --config packaging/nfpm.yaml --packager deb
+
+name: talkkonnect
+arch: "${ARCH}"
+platform: linux
+version: "${VERSION}"
+version_schema: semver
+
+maintainer: "talkkonnect <info@talkkonnect.com>"
+description: |
+  Headless Mumble PTT client for Raspberry Pi and other ARM SBCs.
+  Supports GPIO, LCD/OLED display, GPS, HTTP API, MQTT, and radio gateway features.
+vendor: talkkonnect
+homepage: https://www.talkkonnect.com
+license: MPL-2.0
+
+depends:
+  - libopenal1
+  - libopus0
+  - libasound2
+  - ffmpeg
+
+contents:
+  # Main binary — copy the arch-specific build to dist/talkkonnect before running nfpm
+  - src: dist/talkkonnect
+    dst: /usr/bin/talkkonnect
+    file_info:
+      mode: 0755
+
+  # systemd service unit
+  - src: packaging/systemd/talkkonnect.service
+    dst: /lib/systemd/system/talkkonnect.service
+
+  # udev rules for GPIO / I2C / SPI / serial access
+  - src: packaging/udev/99-talkkonnect.rules
+    dst: /etc/udev/rules.d/99-talkkonnect.rules
+
+  # Bundled sound files
+  - src: soundfiles/
+    dst: /usr/share/talkkonnect/soundfiles/
+
+  # Sample config installed as .example so it is never overwritten on upgrade
+  - src: sample-configs/talkkonnect-current-sample-config.xml
+    dst: /etc/talkkonnect/talkkonnect.xml.example
+    file_info:
+      mode: 0644
+
+  # Directory owned by the talkkonnect user for runtime state
+  - dst: /var/lib/talkkonnect
+    type: dir
+    file_info:
+      mode: 0750
+      owner: talkkonnect
+      group: talkkonnect
+
+scripts:
+  postinstall: packaging/scripts/postinst
+  preremove:   packaging/scripts/prerm
+  postremove:  packaging/scripts/postrm
