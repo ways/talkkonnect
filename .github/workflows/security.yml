@@ -14,6 +14,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      # CGO deps required so the Go toolchain can resolve all packages
+      # (go-openal and gopus use CGO; without the headers govulncheck errors out)
+      - name: Install CGO dependencies
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq libopenal-dev libopus-dev libasound2-dev pkg-config
+
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
