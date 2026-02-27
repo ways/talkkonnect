@@ -88,7 +88,7 @@ func oledDisplay(OledClear bool, OledRow int, OledColumn int, OledOriginalText s
 }
 
 func LcdDisplay(lcdtextshow [4]string, PRSPin int, PEPin int, PD4Pin int, PD5Pin int, PD6Pin int, PD7Pin int, LCDInterfaceType string, LCDI2CAddress byte) {
-	go hd44780.LcdDisplay(LcdText, LCDRSPin, LCDEPin, LCDD4Pin, LCDD5Pin, LCDD6Pin, LCDD7Pin, LCDInterfaceType, LCDI2CAddress)
+	go hd44780.LcdDisplay(lcdtextshow, PRSPin, PEPin, PD4Pin, PD5Pin, PD6Pin, PD7Pin, LCDInterfaceType, LCDI2CAddress)
 }
 
 func (b *Talkkonnect) sevenSegment(function string, value string) {

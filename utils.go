@@ -154,12 +154,6 @@ func (b *Talkkonnect) pingconnectedserver() {
 }
 
 func sendviagmail(username string, password string, receiver string, subject string, message string) error {
-
-	err := gomail.Send(username, password, []string{receiver}, subject, message)
-	if err != nil {
-		return fmt.Errorf("sending Email Via GMAIL Error")
-	}
-
 	if Config.Global.Hardware.TargetBoard == "rpi" {
 		if LCDEnabled {
 			LcdText = [4]string{"nil", "nil", "nil", "Sending Email"}
@@ -168,6 +162,10 @@ func sendviagmail(username string, password string, receiver string, subject str
 		if OLEDEnabled {
 			oledDisplay(false, 6, OLEDStartColumn, "Sending Email")
 		}
+	}
+
+	if err := gomail.Send(username, password, []string{receiver}, subject, message); err != nil {
+		return fmt.Errorf("sending email via Gmail: %w", err)
 	}
 
 	return nil
@@ -236,30 +234,34 @@ func zipit(source, target string) error {
 
 func createDirIfNotExist(dir string) {
 	if _, err := os.Stat(dir); os.IsNotExist(err) {
-		err = os.MkdirAll(dir, 0777)
-		if err != nil {
-			panic(err)
+		if err := os.MkdirAll(dir, 0755); err != nil {
+			log.Printf("error: Cannot Create Directory %v: %v\n", dir, err)
 		}
 	}
 }
 
 func cleardir(dir string) {
-	// The target directory.
-	//directory := CamImageSavePath	// path must end on "/"... fix for no "/"?
-	directory := dir + "/" // path with "/"
-	// Open the directory and read all its files.
-	dirRead, _ := os.Open(directory)
-	dirFiles, _ := dirRead.Readdir(0)
-	// Loop over the directory's files.
-	for index := range dirFiles {
-		fileHere := dirFiles[index]
-		// Get name of file and its full path.
-		nameHere := fileHere.Name()
-		fullPath := directory + nameHere
-		// Remove the files.
-		os.Remove(fullPath)
-		log.Println("info: Removed file", fullPath)
+	directory := dir + "/"
+	dirRead, err := os.Open(directory)
+	if err != nil {
+		log.Printf("error: Cannot Open Directory %v: %v\n", directory, err)
+		return
+	}
+	defer dirRead.Close()
 
+	dirFiles, err := dirRead.Readdir(0)
+	if err != nil {
+		log.Printf("error: Cannot Read Directory %v: %v\n", directory, err)
+		return
+	}
+
+	for _, fileHere := range dirFiles {
+		fullPath := directory + fileHere.Name()
+		if err := os.Remove(fullPath); err != nil {
+			log.Printf("error: Cannot Remove File %v: %v\n", fullPath, err)
+		} else {
+			log.Println("info: Removed file", fullPath)
+		}
 	}
 }
 
@@ -364,16 +366,6 @@ func checkRegex(regex string, compareto string) bool {
 	return match
 }
 
-func createFolderIfNotExists(folder string) {
-	dir, err := os.Open(folder)
-	if os.IsNotExist(err) {
-		os.MkdirAll(folder, 0700)
-		return
-	}
-
-	dir.Close()
-}
-
 func downloadIfNotExists(fileName string, text string, language string) {
 	f, err := os.Open(fileName)
 	if err != nil {
@@ -410,37 +402,35 @@ func generateHashName(name string) string {
 }
 
 func checkGitHubVersion() string {
-
 	tmpfileName := "githubversion.txt"
 
 	if FileExists(tmpfileName) {
-		err := os.Remove(tmpfileName)
-		if err != nil {
+		if err := os.Remove(tmpfileName); err != nil {
 			log.Println("error: Cannot Remove Version File so Cannot Check Current GitHub Version")
 			return talkkonnectVersion
 		}
 	}
 
-	file, err := os.Open(tmpfileName)
-
+	url := "https://raw.githubusercontent.com/talkkonnect/talkkonnect/main/version.go"
+	response, err := http.Get(url)
 	if err != nil {
-		defer file.Close()
-		url := "https://raw.githubusercontent.com/talkkonnect/talkkonnect/main/version.go"
-		response, err := http.Get(url)
-		if err != nil {
-			log.Println("error: Cannot Get Version from GitHub")
-			return talkkonnectVersion
-		}
-		defer response.Body.Close()
-
-		output, err := os.Create(tmpfileName)
-		if err != nil {
-			log.Println("error: Cannot Create Temporary File for Version Checking")
-			return talkkonnectVersion
-		}
-
-		_, _ = io.Copy(output, response.Body)
+		log.Println("error: Cannot Get Version from GitHub")
+		return talkkonnectVersion
 	}
+	defer response.Body.Close()
+
+	output, err := os.Create(tmpfileName)
+	if err != nil {
+		log.Println("error: Cannot Create Temporary File for Version Checking")
+		return talkkonnectVersion
+	}
+
+	if _, err = io.Copy(output, response.Body); err != nil {
+		output.Close()
+		log.Println("error: Cannot Write Temporary File for Version Checking")
+		return talkkonnectVersion
+	}
+	output.Close()
 
 	fileContent, err := os.ReadFile(tmpfileName)
 	if err != nil {
@@ -448,13 +438,13 @@ func checkGitHubVersion() string {
 		return talkkonnectVersion
 	}
 
-	temp := strings.Split(string(fileContent), "\n")
-
-	for _, item := range temp {
+	for _, item := range strings.Split(string(fileContent), "\n") {
 		if checkRegex("talkkonnectVersion", item) {
 			regex := regexp.MustCompile(`"(.*)"`)
-			match := regex.FindStringSubmatch(item)[1]
-			return match // this will return the version found on github
+			match := regex.FindStringSubmatch(item)
+			if len(match) > 1 {
+				return match[1]
+			}
 		}
 	}
 
@@ -564,19 +554,17 @@ func (b *Talkkonnect) VTMove(command string) {
 			}
 		}
 		if command == "down" {
-			if Index >= 0 {
-				if Config.Accounts.Account[AccountIndex].Voicetargets.ID[Index].IsCurrent {
-					Config.Accounts.Account[AccountIndex].Voicetargets.ID[CurrentIndex].IsCurrent = false
-					if Index > 0 {
-						CurrentIndex = Index - 1
-					}
-					if Index == 0 {
-						CurrentIndex = targetCount
-					}
-					Config.Accounts.Account[AccountIndex].Voicetargets.ID[CurrentIndex].IsCurrent = true
-					TargetID = Config.Accounts.Account[AccountIndex].Voicetargets.ID[CurrentIndex].Value
-					break
+			if Config.Accounts.Account[AccountIndex].Voicetargets.ID[Index].IsCurrent {
+				Config.Accounts.Account[AccountIndex].Voicetargets.ID[CurrentIndex].IsCurrent = false
+				if Index > 0 {
+					CurrentIndex = Index - 1
 				}
+				if Index == 0 {
+					CurrentIndex = targetCount
+				}
+				Config.Accounts.Account[AccountIndex].Voicetargets.ID[CurrentIndex].IsCurrent = true
+				TargetID = Config.Accounts.Account[AccountIndex].Voicetargets.ID[CurrentIndex].Value
+				break
 			}
 		}
 	}

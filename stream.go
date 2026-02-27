@@ -102,8 +102,8 @@ func (b *Talkkonnect) StartSource() error {
 	if eventSound.Enabled {
 		if v, err := strconv.ParseFloat(eventSound.Volume, 32); err == nil {
 			time.Sleep(300 * time.Millisecond)
-			log.Println("alert: Playing Incomming into Stream")
-			b.splayIntoStream(eventSound.FileName, float32(v))
+			log.Println("alert: Playing Incoming into Stream")
+			b.playDirectIntoStream(eventSound.FileName, float32(v))
 		}
 	}
 	// Ensure device is valid before starting capture
@@ -131,7 +131,7 @@ func (b *Talkkonnect) StopSource() error {
 		//MyLedStripTransmitLEDOn()
 		log.Println("debug: Rogerbeep Playing")
 		if v, err := strconv.ParseFloat(eventSound.Volume, 32); err == nil {
-			b.splayIntoStream(eventSound.FileName, float32(v))
+			b.playDirectIntoStream(eventSound.FileName, float32(v))
 		}
 		GPIOOutPin("transmit", "off")
 		//MyLedStripTransmitLEDOff()
@@ -275,7 +275,7 @@ func (b *Talkkonnect) playIntoStream(filepath string, vol float32) {
 	}
 }
 
-func (b *Talkkonnect) splayIntoStream(filepath string, vol float32) {
+func (b *Talkkonnect) playDirectIntoStream(filepath string, vol float32) {
 	pstream = gumbleffmpeg.New(b.Stream.client, gumbleffmpeg.SourceFile(filepath), vol/100)
 	if err := pstream.Play(); err != nil {
 		log.Printf("error: Can't play %s error %s", filepath, err)

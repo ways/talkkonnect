@@ -353,8 +353,8 @@ func (b *Talkkonnect) cmdVolumeTXDown() {
 			b.sevenSegment("localvolume", strconv.Itoa(origVolume))
 		}
 	} else {
-		log.Println("debug: TX Mic Increase Volume Already")
-		log.Println("info: Already at Maximum Possible Volume")
+		log.Println("debug: TX Mic Decrease Volume Already")
+		log.Println("info: Already at Minimum Possible Volume")
 		if Config.Global.Hardware.TargetBoard == "rpi" {
 			if LCDEnabled {
 				LcdText = [4]string{"nil", "nil", "nil", "Min Vol"}
@@ -608,11 +608,11 @@ func (b *Talkkonnect) cmdSendEmail() {
 		}
 
 		if Config.Global.Software.SMTP.GpsLatLong {
-			emailMessage = emailMessage + fmt.Sprintf("Latitude "+strconv.FormatFloat(GNSSData.Lattitude, 'f', 6, 64)+" Longitude "+strconv.FormatFloat(GNSSData.Longitude, 'f', 6, 64)+"\n")
+			emailMessage = emailMessage + fmt.Sprintf("Latitude "+strconv.FormatFloat(GNSSData.Latitude, 'f', 6, 64)+" Longitude "+strconv.FormatFloat(GNSSData.Longitude, 'f', 6, 64)+"\n")
 		}
 
 		if Config.Global.Software.SMTP.GoogleMapsURL {
-			emailMessage = emailMessage + "http://www.google.com/maps/place/" + strconv.FormatFloat(GNSSData.Lattitude, 'f', 6, 64) + "," + strconv.FormatFloat(GNSSData.Longitude, 'f', 6, 64)
+			emailMessage = emailMessage + "http://www.google.com/maps/place/" + strconv.FormatFloat(GNSSData.Latitude, 'f', 6, 64) + "," + strconv.FormatFloat(GNSSData.Longitude, 'f', 6, 64)
 		}
 
 		err := sendviagmail(Config.Global.Software.SMTP.Username, Config.Global.Software.SMTP.Password, Config.Global.Software.SMTP.Receiver, Config.Global.Software.SMTP.Subject, emailMessage)
@@ -841,7 +841,7 @@ func (b *Talkkonnect) cmdPanicSimulation() {
 
 			if goodGPSRead && i != tries {
 				log.Println("info: Sending GPS Info My Message")
-				gpsMessage := "My GPS Coordinates are " + fmt.Sprintf(" Latitude "+strconv.FormatFloat(GNSSData.Lattitude, 'f', 6, 64)) + fmt.Sprintf(" Longitude "+strconv.FormatFloat(GNSSData.Longitude, 'f', 6, 64))
+				gpsMessage := "My GPS Coordinates are " + fmt.Sprintf(" Latitude "+strconv.FormatFloat(GNSSData.Latitude, 'f', 6, 64)) + fmt.Sprintf(" Longitude "+strconv.FormatFloat(GNSSData.Longitude, 'f', 6, 64))
 				b.SendMessage(gpsMessage, Config.Global.Hardware.PanicFunction.RecursiveSendMessage)
 			}
 
@@ -898,12 +898,12 @@ func (b *Talkkonnect) cmdPanicSimulation() {
 func (b *Talkkonnect) cmdRepeatTxLoop() {
 	log.Printf("debug: Ctrl-R Pressed \n")
 	log.Println("info: Repeat TX Test Requested")
-	isrepeattx = !isrepeattx
+	stopRepeatTx = !stopRepeatTx
 	go b.repeatTx()
 }
 
 func (b *Talkkonnect) cmdScanChannels() {
-	log.Printf("debug: Ctrl-S Pressed fgrom \n")
+	log.Printf("debug: Ctrl-S Pressed\n")
 	log.Println("info: Scanning Channels")
 
 	TTSEvent("startscanning")

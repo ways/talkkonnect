@@ -137,7 +137,7 @@ func (b *Talkkonnect) PlayTone(toneFreq int, toneDuration float32, destination s
 		GPIOOutPin("transmit", "on")
 		//MyLedStripTransmitLEDOn()
 		log.Println("debug: Repeater Tone Playing")
-		b.splayIntoStream(toneFileName, 50)
+		b.playDirectIntoStream(toneFileName, 50)
 		GPIOOutPin("transmit", "off")
 		log.Printf("info: Played Tone at Frequency %v Hz With Duration of %v Seconds Into Stream\n", toneFreq, toneDuration)
 	}

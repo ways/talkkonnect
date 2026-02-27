@@ -61,7 +61,7 @@ type GNSSDataStruct struct {
 	Variation  float64
 	Time       string
 	Validity   string
-	Lattitude  float64
+	Latitude   float64
 	Longitude  float64
 	Speed      float64
 	Course     float64
@@ -187,7 +187,7 @@ func getGpsPosition(verbosity int) (bool, error) {
 								GNSSData.Date = fmt.Sprintf("%v", m.Date)
 								GNSSData.Time = fmt.Sprintf("%v", m.Time)
 								GNSSData.Validity = fmt.Sprintf("%v", m.Validity)
-								GNSSData.Lattitude = m.Latitude
+								GNSSData.Latitude = m.Latitude
 								GNSSData.Longitude = m.Longitude
 								GNSSData.Speed = m.Speed
 								GNSSData.Course = m.Course
@@ -255,7 +255,7 @@ func httpSendTraccar(tprotocol string) {
 		if tprotocol == "osmand" {
 			TraccarDateTime := GNSSDataTraccar.DateTime.Format("2006-01-02") + "%20" + GNSSDataTraccar.DateTime.Format("15:04:05")
 			TraccarServerFullURL = (fmt.Sprint(Config.Global.Hardware.Traccar.Protocol.Osmand.ServerURL) + ":" + fmt.Sprint(Config.Global.Hardware.Traccar.Protocol.Osmand.Port) + "/?" + "id=" + Config.Global.Hardware.Traccar.ClientId + "&" +
-				"timestamp=" + TraccarDateTime + "&" + "lat=" + fmt.Sprintf("%f", GNSSDataTraccar.Lattitude) +
+				"timestamp=" + TraccarDateTime + "&" + "lat=" + fmt.Sprintf("%f", GNSSDataTraccar.Latitude) +
 				"&" + "lon=" + fmt.Sprintf("%f", GNSSDataTraccar.Longitude) + "&" + "speed=" + fmt.Sprintf("%f", GNSSDataTraccar.Speed) + "&" + "course=" +
 				fmt.Sprintf("%f", GNSSDataTraccar.Course) + "&" + "variation=" + fmt.Sprintf("%f", GNSSDataTraccar.Variation) + "&" + "hdop=" + fmt.Sprintf("%f", GNSSData.HDOP) + "&" + "altitude=" + fmt.Sprintf("%f", GNSSData.Altitude))
 
@@ -301,12 +301,12 @@ func httpSendTraccar(tprotocol string) {
 				//NEW. Print "TRACK OK" to display for 200 server status message.
 				tnow := time.Now().Format("15:04:05")
 				if Config.Global.Hardware.LCD.Enabled && Config.Global.Hardware.Traccar.DeviceScreenEnabled {
-					LcdText = [4]string{"nil", "TRACK OK " + tnow, "lat:" + fmt.Sprintf("%f", GNSSDataTraccar.Lattitude) + " c:" + fmt.Sprintf("%f", GNSSDataTraccar.Course), "lon:" + fmt.Sprintf("%f", GNSSDataTraccar.Longitude) + " s:" + fmt.Sprintf("%.2f", GNSSDataTraccar.Speed*1.852)}
+					LcdText = [4]string{"nil", "TRACK OK " + tnow, "lat:" + fmt.Sprintf("%f", GNSSDataTraccar.Latitude) + " c:" + fmt.Sprintf("%f", GNSSDataTraccar.Course), "lon:" + fmt.Sprintf("%f", GNSSDataTraccar.Longitude) + " s:" + fmt.Sprintf("%.2f", GNSSDataTraccar.Speed*1.852)}
 					go hd44780.LcdDisplay(LcdText, LCDRSPin, LCDEPin, LCDD4Pin, LCDD5Pin, LCDD6Pin, LCDD7Pin, LCDInterfaceType, LCDI2CAddress)
 				}
 				if Config.Global.Hardware.OLED.Enabled {
 					oledDisplay(false, 4, OLEDStartColumn, "TRACK OK "+GNSSDataTraccar.DateTime.Format("15:04:05"))
-					oledDisplay(false, 5, OLEDStartColumn, "lat: "+fmt.Sprintf("%f", GNSSDataTraccar.Lattitude))
+					oledDisplay(false, 5, OLEDStartColumn, "lat: "+fmt.Sprintf("%f", GNSSDataTraccar.Latitude))
 					oledDisplay(false, 6, OLEDStartColumn, "lon: "+fmt.Sprintf("%f", GNSSDataTraccar.Longitude))
 					oledDisplay(false, 7, OLEDStartColumn, "s:"+fmt.Sprintf("%.2f", (GNSSDataTraccar.Speed*1.852))+" c:"+fmt.Sprintf("%f", GNSSDataTraccar.Course))
 				}
@@ -328,13 +328,13 @@ func httpSendTraccar(tprotocol string) {
 
 				tnow := time.Now().Format("15:04:05")
 				if Config.Global.Hardware.LCD.Enabled && Config.Global.Hardware.Traccar.DeviceScreenEnabled {
-					LcdText = [4]string{"nil", "TRACK ERR2 " + tnow, "lat:" + fmt.Sprintf("%f", GNSSDataTraccar.Lattitude) + " c:" + fmt.Sprintf("%f", GNSSDataTraccar.Course), "lon:" + fmt.Sprintf("%f", GNSSDataTraccar.Longitude) + " s:" + fmt.Sprintf("%.2f", GNSSDataTraccar.Speed*1.852)}
+					LcdText = [4]string{"nil", "TRACK ERR2 " + tnow, "lat:" + fmt.Sprintf("%f", GNSSDataTraccar.Latitude) + " c:" + fmt.Sprintf("%f", GNSSDataTraccar.Course), "lon:" + fmt.Sprintf("%f", GNSSDataTraccar.Longitude) + " s:" + fmt.Sprintf("%.2f", GNSSDataTraccar.Speed*1.852)}
 					go hd44780.LcdDisplay(LcdText, LCDRSPin, LCDEPin, LCDD4Pin, LCDD5Pin, LCDD6Pin, LCDD7Pin, LCDInterfaceType, LCDI2CAddress)
 				}
 
 				if Config.Global.Hardware.OLED.Enabled {
 					oledDisplay(false, 4, OLEDStartColumn, "TRACK ERR2 "+GNSSDataTraccar.DateTime.Format("15:04:05"))
-					oledDisplay(false, 5, OLEDStartColumn, "lat: "+fmt.Sprintf("%f", GNSSDataTraccar.Lattitude))
+					oledDisplay(false, 5, OLEDStartColumn, "lat: "+fmt.Sprintf("%f", GNSSDataTraccar.Latitude))
 					oledDisplay(false, 6, OLEDStartColumn, "lon: "+fmt.Sprintf("%f", GNSSDataTraccar.Longitude))
 					oledDisplay(false, 7, OLEDStartColumn, "s:"+fmt.Sprintf("%.2f", (GNSSDataTraccar.Speed*1.852))+" c:"+fmt.Sprintf("%f", GNSSDataTraccar.Course))
 				}
@@ -393,12 +393,12 @@ func httpSendTraccar(tprotocol string) {
 
 				tnow := time.Now().Format("15:04:05")
 				if Config.Global.Hardware.LCD.Enabled && Config.Global.Hardware.Traccar.DeviceScreenEnabled {
-					LcdText = [4]string{"nil", "TRACK ERR1 " + tnow, "lat:" + fmt.Sprintf("%f", GNSSDataTraccar.Lattitude) + " c:" + fmt.Sprintf("%f", GNSSDataTraccar.Course), "lon:" + fmt.Sprintf("%f", GNSSDataTraccar.Longitude) + " s:" + fmt.Sprintf("%.2f", GNSSDataTraccar.Speed*1.852)}
+					LcdText = [4]string{"nil", "TRACK ERR1 " + tnow, "lat:" + fmt.Sprintf("%f", GNSSDataTraccar.Latitude) + " c:" + fmt.Sprintf("%f", GNSSDataTraccar.Course), "lon:" + fmt.Sprintf("%f", GNSSDataTraccar.Longitude) + " s:" + fmt.Sprintf("%.2f", GNSSDataTraccar.Speed*1.852)}
 					go hd44780.LcdDisplay(LcdText, LCDRSPin, LCDEPin, LCDD4Pin, LCDD5Pin, LCDD6Pin, LCDD7Pin, LCDInterfaceType, LCDI2CAddress)
 				}
 				if Config.Global.Hardware.OLED.Enabled {
 					oledDisplay(false, 4, OLEDStartColumn, "TRACK ERR1 "+GNSSDataTraccar.DateTime.Format("15:04:05"))
-					oledDisplay(false, 5, OLEDStartColumn, "lat: "+fmt.Sprintf("%f", GNSSDataTraccar.Lattitude))
+					oledDisplay(false, 5, OLEDStartColumn, "lat: "+fmt.Sprintf("%f", GNSSDataTraccar.Latitude))
 					oledDisplay(false, 6, OLEDStartColumn, "lon: "+fmt.Sprintf("%f", GNSSDataTraccar.Longitude))
 					oledDisplay(false, 7, OLEDStartColumn, "s:"+fmt.Sprintf("%.2f", (GNSSDataTraccar.Speed*1.852))+" c:"+fmt.Sprintf("%f", GNSSDataTraccar.Course))
 				}
@@ -438,12 +438,12 @@ func tcpSendT55Traccar() {
 
 			tnow := time.Now().Format("15:04:05")
 			if Config.Global.Hardware.LCD.Enabled && Config.Global.Hardware.Traccar.DeviceScreenEnabled {
-				LcdText = [4]string{"nil", "TRACK ERR3 " + tnow, "lat:" + fmt.Sprintf("%f", GNSSDataTraccar.Lattitude) + " c:" + fmt.Sprintf("%f", GNSSDataTraccar.Course), "lon:" + fmt.Sprintf("%f", GNSSDataTraccar.Longitude) + " s:" + fmt.Sprintf("%.2f", GNSSDataTraccar.Speed*1.852)}
+				LcdText = [4]string{"nil", "TRACK ERR3 " + tnow, "lat:" + fmt.Sprintf("%f", GNSSDataTraccar.Latitude) + " c:" + fmt.Sprintf("%f", GNSSDataTraccar.Course), "lon:" + fmt.Sprintf("%f", GNSSDataTraccar.Longitude) + " s:" + fmt.Sprintf("%.2f", GNSSDataTraccar.Speed*1.852)}
 				go hd44780.LcdDisplay(LcdText, LCDRSPin, LCDEPin, LCDD4Pin, LCDD5Pin, LCDD6Pin, LCDD7Pin, LCDInterfaceType, LCDI2CAddress)
 			}
 			if Config.Global.Hardware.OLED.Enabled {
 				oledDisplay(false, 4, OLEDStartColumn, "Track ERR3 "+GNSSDataTraccar.DateTime.Format("15:04:05"))
-				oledDisplay(false, 5, OLEDStartColumn, "lat: "+fmt.Sprintf("%f", GNSSDataTraccar.Lattitude))
+				oledDisplay(false, 5, OLEDStartColumn, "lat: "+fmt.Sprintf("%f", GNSSDataTraccar.Latitude))
 				oledDisplay(false, 6, OLEDStartColumn, "lon: "+fmt.Sprintf("%f", GNSSDataTraccar.Longitude))
 				oledDisplay(false, 7, OLEDStartColumn, "s:"+fmt.Sprintf("%.2f", (GNSSDataTraccar.Speed*1.852))+" c:"+fmt.Sprintf("%f", GNSSDataTraccar.Course))
 			}
@@ -495,12 +495,12 @@ func tcpSendT55Traccar() {
 
 		tnow := time.Now().Format("15:04:05")
 		if Config.Global.Hardware.LCD.Enabled && Config.Global.Hardware.Traccar.DeviceScreenEnabled {
-			LcdText = [4]string{"nil", "TRACK OK* " + tnow, "lat:" + fmt.Sprintf("%f", GNSSDataTraccar.Lattitude) + " c:" + fmt.Sprintf("%f", GNSSDataTraccar.Course), "lon:" + fmt.Sprintf("%f", GNSSDataTraccar.Longitude) + " s:" + fmt.Sprintf("%.2f", GNSSDataTraccar.Speed*1.852)}
+			LcdText = [4]string{"nil", "TRACK OK* " + tnow, "lat:" + fmt.Sprintf("%f", GNSSDataTraccar.Latitude) + " c:" + fmt.Sprintf("%f", GNSSDataTraccar.Course), "lon:" + fmt.Sprintf("%f", GNSSDataTraccar.Longitude) + " s:" + fmt.Sprintf("%.2f", GNSSDataTraccar.Speed*1.852)}
 			go hd44780.LcdDisplay(LcdText, LCDRSPin, LCDEPin, LCDD4Pin, LCDD5Pin, LCDD6Pin, LCDD7Pin, LCDInterfaceType, LCDI2CAddress)
 		}
 		if Config.Global.Hardware.OLED.Enabled {
 			oledDisplay(false, 4, OLEDStartColumn, "TRACK OK* "+GNSSDataTraccar.DateTime.Format("15:04:05"))
-			oledDisplay(false, 5, OLEDStartColumn, "lat: "+fmt.Sprintf("%f", GNSSDataTraccar.Lattitude))
+			oledDisplay(false, 5, OLEDStartColumn, "lat: "+fmt.Sprintf("%f", GNSSDataTraccar.Latitude))
 			oledDisplay(false, 6, OLEDStartColumn, "lon: "+fmt.Sprintf("%f", GNSSDataTraccar.Longitude))
 			oledDisplay(false, 7, OLEDStartColumn, "s:"+fmt.Sprintf("%.2f", (GNSSDataTraccar.Speed*1.852))+" c:"+fmt.Sprintf("%f", GNSSDataTraccar.Course))
 		}
@@ -514,7 +514,7 @@ func consoleScreenLogging() {
 		log.Printf("debug: RMC Validity (%v), GGA GPS Quality Indicator (%v) %v/%v\n", GNSSDataTraccar.Validity, GNSSDataTraccar.FixQuality, GNSSDataTraccar.SatsInUse, GNSSDataTraccar.SatsInView)
 		log.Printf("debug: RMC Date Time              %v %v\n", GNSSDataTraccar.Date, GNSSDataTraccar.Time)
 		log.Printf("debug: OS  DateTime(UTC)          %v\n", GNSSDataTraccar.DateTime)
-		log.Printf("debug: RMC Latitude,Longitude DMS %v,%v\n", GNSSDataTraccar.Lattitude, GNSSDataTraccar.Longitude)
+		log.Printf("debug: RMC Latitude,Longitude DMS %v,%v\n", GNSSDataTraccar.Latitude, GNSSDataTraccar.Longitude)
 		log.Printf("debug: RMC Speed, Course          %v,%v\n", GNSSDataTraccar.Speed, GNSSDataTraccar.Course)
 		log.Printf("debug: RMC Variation, GGA HDOP    %v,%v\n", GNSSDataTraccar.Variation, GNSSDataTraccar.HDOP)
 		log.Printf("debug: GGA Altitude               %v\n", GNSSDataTraccar.Altitude)
@@ -528,7 +528,7 @@ func gpsDisplayShow() {
 	GPSDataChannelReceivers++
 	for {
 		GNSSDataTraccar := <-GNSSDataPublic
-		log.Printf("debug: Device Screen Latitude : %f Longitude : %f\n", GNSSDataTraccar.Lattitude, GNSSDataTraccar.Longitude)
+		log.Printf("debug: Device Screen Latitude : %f Longitude : %f\n", GNSSDataTraccar.Latitude, GNSSDataTraccar.Longitude)
 
 		if Config.Global.Hardware.GPS.Enabled && Config.Global.Hardware.GPS.GpsDiagSounds {
 			eventSound := findEventSound("gpsOK")
@@ -542,12 +542,12 @@ func gpsDisplayShow() {
 
 		tnow := time.Now().Format("15:04:05")
 		if Config.Global.Hardware.GPS.Enabled && Config.Global.Hardware.LCD.Enabled && Config.Global.Hardware.GPS.GpsDisplayShow && !Config.Global.Hardware.Traccar.DeviceScreenEnabled {
-			LcdText = [4]string{"nil", "GPS OK " + tnow, "lat:" + fmt.Sprintf("%f", GNSSDataTraccar.Lattitude) + " c:" + fmt.Sprintf("%f", GNSSDataTraccar.Course), "lon:" + fmt.Sprintf("%f", GNSSDataTraccar.Longitude) + " s:" + fmt.Sprintf("%.2f", GNSSDataTraccar.Speed*1.852)}
+			LcdText = [4]string{"nil", "GPS OK " + tnow, "lat:" + fmt.Sprintf("%f", GNSSDataTraccar.Latitude) + " c:" + fmt.Sprintf("%f", GNSSDataTraccar.Course), "lon:" + fmt.Sprintf("%f", GNSSDataTraccar.Longitude) + " s:" + fmt.Sprintf("%.2f", GNSSDataTraccar.Speed*1.852)}
 			go hd44780.LcdDisplay(LcdText, LCDRSPin, LCDEPin, LCDD4Pin, LCDD5Pin, LCDD6Pin, LCDD7Pin, LCDInterfaceType, LCDI2CAddress)
 		}
 		if Config.Global.Hardware.OLED.Enabled {
 			oledDisplay(false, 4, OLEDStartColumn, "GPS OK "+GNSSDataTraccar.DateTime.Format("15:04:05"))
-			oledDisplay(false, 5, OLEDStartColumn, "lat: "+fmt.Sprintf("%f", GNSSDataTraccar.Lattitude))
+			oledDisplay(false, 5, OLEDStartColumn, "lat: "+fmt.Sprintf("%f", GNSSDataTraccar.Latitude))
 			oledDisplay(false, 6, OLEDStartColumn, "lon: "+fmt.Sprintf("%f", GNSSDataTraccar.Longitude))
 			oledDisplay(false, 7, OLEDStartColumn, "s:"+fmt.Sprintf("%.2f", (GNSSDataTraccar.Speed*1.852))+" c:"+fmt.Sprintf("%f", GNSSDataTraccar.Course))
 		}

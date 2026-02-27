@@ -57,8 +57,8 @@ import (
 )
 
 var (
-	tmessage   string
-	isrepeattx bool = true
+	tmessage     string
+	stopRepeatTx bool = true
 )
 
 type Talkkonnect struct {

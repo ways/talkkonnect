@@ -35,7 +35,7 @@ func (b *Talkkonnect) Speak(text string, destination string, playBackVolume int,
 	generatedHashName := generateHashName(text)
 	fileNameWithPath := Config.Global.Software.TTSMessages.TTSSoundDirectory + "/" + generatedHashName + ".mp3"
 
-	createFolderIfNotExists(Config.Global.Software.TTSMessages.TTSSoundDirectory)
+	createDirIfNotExist(Config.Global.Software.TTSMessages.TTSSoundDirectory)
 	downloadIfNotExists(fileNameWithPath, text, language)
 
 	log.Printf("info: %v, destination=%v playBackVolume=%v duration=%v loop=%v language=%v\n", text, destination, playBackVolume, duration, loop, language)

@@ -447,12 +447,12 @@ func (b *Talkkonnect) repeatTx() {
 		time.Sleep(Config.Global.Software.Settings.RepeatTXDelay * time.Second)
 		if i > 0 {
 			log.Println("info: TX Cycle ", i)
-			if isrepeattx {
-				log.Println("info: Repeat Tx Loop Text Forcefully Stopped")
+			if stopRepeatTx {
+				log.Println("info: Repeat TX Loop Test Forcefully Stopped")
 			}
 		}
 
-		if isrepeattx {
+		if stopRepeatTx {
 			break
 		}
 	}

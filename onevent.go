@@ -406,23 +406,23 @@ func (b *Talkkonnect) OnPermissionDenied(e *gumble.PermissionDeniedEvent) {
 	case gumble.PermissionDeniedPermission:
 		log.Printf("warn: Permission Denied For Channel ID %v Channel Name %v\n", e.Channel.ID, e.Channel.Name)
 	case gumble.PermissionDeniedSuperUser:
-		log.Println("cannot modify SuperUser")
+		log.Println("warn: Cannot modify SuperUser")
 	case gumble.PermissionDeniedInvalidChannelName:
-		log.Println("invalid channel name")
+		log.Println("warn: Invalid channel name")
 	case gumble.PermissionDeniedTextTooLong:
-		log.Println("text too long")
+		log.Println("warn: Text too long")
 	case gumble.PermissionDeniedTemporaryChannel:
-		log.Println("temporary channel")
+		log.Println("warn: Temporary channel")
 	case gumble.PermissionDeniedMissingCertificate:
-		log.Println("missing certificate")
+		log.Println("warn: Missing certificate")
 	case gumble.PermissionDeniedInvalidUserName:
-		log.Println("invalid user name")
+		log.Println("warn: Invalid user name")
 	case gumble.PermissionDeniedChannelFull:
-		log.Println("channel full")
+		log.Println("warn: Channel full")
 	case gumble.PermissionDeniedNestingLimit:
-		log.Println("nesting limit")
+		log.Println("warn: Nesting limit")
 	case gumble.PermissionDeniedOther:
-		log.Println("other")
+		log.Println("warn: Other permission denied")
 	}
 }
 

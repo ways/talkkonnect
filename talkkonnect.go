@@ -73,7 +73,7 @@ func talkkonnectBanner(backgroundcolor string) {
 func talkkonnectAcknowledgements(backgroundcolor string) {
 	var backgroundreset string = "\u001b[0m"
 	log.Println("info: " + backgroundcolor + "┌──────────────────────────────────────────────────────────────────────────────────────────────┐" + backgroundreset)
-	log.Println("info: " + backgroundcolor + "│Acknowledgements & Inspriation from the talkkonnect team of developers, maintainers & testers │" + backgroundreset)
+	log.Println("info: " + backgroundcolor + "│Acknowledgements & Inspiration from the talkkonnect team of developers, maintainers & testers  │" + backgroundreset)
 	log.Println("info: " + backgroundcolor + "│talkkonnect is based on the works of many people and many open source projects                │" + backgroundreset)
 	log.Println("info: " + backgroundcolor + "├──────────────────────────────────────────────────────────────────────────────────────────────┤" + backgroundreset)
 	log.Println("info: " + backgroundcolor + "│Thanks to Organizations :-                                                                    │" + backgroundreset)
@@ -83,7 +83,7 @@ func talkkonnectAcknowledgements(backgroundcolor string) {
 	log.Println("info: " + backgroundcolor + "│                                                                                              │" + backgroundreset)
 	log.Println("info: " + backgroundcolor + "│Thanks to Individuals :-                                                                      │" + backgroundreset)
 	log.Println("info: " + backgroundcolor + "│Daniel Chote Creator of talkiepi and Tim Cooper Creator of Barnard and gumble library         │" + backgroundreset)
-	log.Println("info: " + backgroundcolor + "│Zoran Dimitrijevic for his commitment, building, testing, docummentation and kind feedback    │" + backgroundreset)
+	log.Println("info: " + backgroundcolor + "│Zoran Dimitrijevic for his commitment, building, testing, documentation and kind feedback     │" + backgroundreset)
 	log.Println("info: " + backgroundcolor + "│enabling us to take talkkonnect to use cases never originally imagined                        │" + backgroundreset)
 	log.Println("info: " + backgroundcolor + "├──────────────────────────────────────────────────────────────────────────────────────────────┤" + backgroundreset)
 	log.Println("info: " + backgroundcolor + "│visit us at www.talkkonnect.com and github.com/talkkonnect                                    │" + backgroundreset)
