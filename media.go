@@ -144,47 +144,6 @@ func (b *Talkkonnect) PlayTone(toneFreq int, toneDuration float32, destination s
 
 }
 
-/*
-func playAnnouncementMedia(id int) {
-
-	for _, multimedia := range Config.Global.Multimedia.ID {
-		apiid, err := strconv.Atoi(multimedia.Value)
-		if apiid == id && err == nil {
-			if multimedia.Params.Localplay {
-				if multimedia.Params.GPIO.Enabled {
-					GPIOOutPin(multimedia.Params.GPIO.Name, "on")
-				}
-				if multimedia.Params.Predelay.Enabled && multimedia.Params.Predelay.Value > 0 {
-					time.Sleep(multimedia.Params.Predelay.Value * time.Second)
-				}
-				if multimedia.Params.Announcementtone.Enabled && FileExists(multimedia.Params.Announcementtone.File) {
-					localMediaPlayer(multimedia.Params.Announcementtone.File, multimedia.Params.Announcementtone.Volume, multimedia.Params.Announcementtone.Blocking, 0, 1) //todo replace 1 with volume from xmlconfig
-				}
-				for _, source := range multimedia.Media.Source {
-					if source.Enabled {
-						log.Printf("debug: Playing %v filename %v\n", source.Name, source.File)
-						localMediaPlayer(source.File, source.Volume, multimedia.Params.Announcementtone.Blocking, source.Duration, source.Loop)
-					}
-				}
-				if multimedia.Params.Postdelay.Enabled && multimedia.Params.Postdelay.Value > 0 {
-					time.Sleep(multimedia.Params.Postdelay.Value * time.Second)
-				}
-				if multimedia.Params.GPIO.Enabled {
-					GPIOOutPin(multimedia.Params.GPIO.Name, "off")
-				}
-			}
-			if multimedia.Params.Playintostream {
-				log.Println("alert: todo play into stream not implemented yet")
-			}
-
-			if multimedia.Params.Voicetarget {
-				log.Println("alert: todo play to voice targets not implemented yet")
-			}
-		}
-	}
-}
-*/
-
 func findEventSound(findEventSound string) EventSoundStruct {
 	for _, sound := range Config.Global.Software.Sounds.Sound {
 		if sound.Enabled && sound.Event == findEventSound {

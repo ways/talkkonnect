@@ -35,7 +35,6 @@ package talkkonnect
 import (
 	"io"
 	"log"
-	"os"
 	"os/exec"
 )
 
@@ -52,7 +51,6 @@ type Dj struct {
 }
 
 var stations = load_stations()
-var status_chan = make(chan string)
 var pipe_chan = make(chan io.ReadCloser)
 var ffmpeg = FFmpeg{player_name: "ffmpeg", is_playing: false, pipe_chan: pipe_chan}
 var player = Dj{player: &ffmpeg, stations: stations, current_station: -1}
@@ -62,15 +60,6 @@ func checker(err error) {
 		log.Printf("error: %v", err)
 		return
 	}
-}
-
-func Exists(name string) bool {
-	if _, err := os.Stat(name); err != nil {
-		if os.IsNotExist(err) {
-			return false
-		}
-	}
-	return true
 }
 
 func (dj *Dj) Play(station int) {
