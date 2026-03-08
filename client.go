@@ -57,8 +57,9 @@ import (
 )
 
 var (
-	tmessage   string
-	isrepeattx bool = true
+	tmessage    string
+	isrepeattx  bool = true
+	hasTerminal bool
 )
 
 type Talkkonnect struct {
@@ -87,11 +88,12 @@ type ChannelsListStruct struct {
 }
 
 func Init(file string, ServerIndex string) {
-	err := term.Init()
-	if err != nil {
-		FatalCleanUp("Cannot Initialize Terminal Error: " + err.Error())
+	hasTerminal = term.Init() == nil
+	if hasTerminal {
+		defer term.Close()
+	} else {
+		log.Println("info: No terminal available (running as a service), keyboard input disabled")
 	}
-	defer term.Close()
 
 	colog.Register()
 	colog.SetOutput(os.Stdout)
@@ -575,6 +577,10 @@ func (b *Talkkonnect) ClientStart() {
 
 	if Config.Global.Software.RemoteSSHConsole.Enabled {
 		go gosshd.SSHDaemon(Config.Global.Software.RemoteSSHConsole.Username, Config.Global.Software.RemoteSSHConsole.Password, Config.Global.Software.RemoteSSHConsole.IDRSAFile, Config.Global.Software.RemoteSSHConsole.Listen)
+	}
+
+	if !hasTerminal {
+		return
 	}
 
 keyPressListenerLoop:
