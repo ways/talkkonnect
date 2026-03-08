@@ -9,15 +9,15 @@ jobs:
   build-deb:
     runs-on: ubuntu-latest
     permissions:
-      contents: write   # needed to create the release and upload assets
+      contents: write # needed to create the release and upload assets
 
     strategy:
       matrix:
         include:
           - platform: linux/arm64
             deb_arch: arm64
-          - platform: linux/arm/v7
-            deb_arch: armhf
+          # - platform: linux/arm/v7
+          #   deb_arch: armhf
 
     steps:
       - name: Checkout
