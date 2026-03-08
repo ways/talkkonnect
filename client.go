@@ -99,7 +99,7 @@ func Init(file string, ServerIndex string) {
 	colog.SetOutput(os.Stdout)
 
 	ConfigXMLFile = file
-	err = readxmlconfig(ConfigXMLFile, false)
+	err := readxmlconfig(ConfigXMLFile, false)
 	if err != nil {
 		message := err.Error()
 		FatalCleanUp(message)
